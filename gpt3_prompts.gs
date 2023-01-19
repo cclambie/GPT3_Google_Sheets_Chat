@@ -1,9 +1,14 @@
-
 // Replace YOUR_API_KEY with your actual API key
-var apiKey = "";
+var apiKey = "YOUR_API_KEY";
+
 // The URL of the GPT-3 API endpoint
 var endpoint = "https://api.openai.com/v1/completions";
-function updateResponse(prompt, row) {
+
+//Create a Spreadsheet with your headings of "Prompt" in column A and "Response" in column B
+var responseIndex = 1
+
+function makeRequestToOpenAI(row, vPrompt) {
+  var prompt = vPrompt;
   // The parameters for the API request
   var params = {
     "model": "text-davinci-003",
@@ -29,19 +34,26 @@ function updateResponse(prompt, row) {
   
   // Update the response column in the sheet
   var sheet = SpreadsheetApp.getActiveSheet();
-  sheet.getRange(row, 2).setValue(json.choices[0].text);
+  sheet.getRange(row, responseIndex).setValue(json.choices[0].text);
 }
 
-function editTrigger(e) {
-  var sheet = e.source.getActiveSheet();
-  var columnA = e.range.getColumn();
-  var row = e.range.getRow();
+function fTheTrigger() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getActiveSheet();
+  //var editedRange = e.range;
+  var row = sheet.getLastRow();
+
+  // Get the number of columns in the sheet
+  var numColumns = sheet.getLastColumn();
   
-  // Check if the change was made in column A
-  if (columnA == 1) {
-    // Check if the cell in column A is not empty
-    if (sheet.getRange(row, 1).getValue() != "") {
-      updateResponse(sheet.getRange(row, 1).getValue(),row)
-    }
+  // Get the range for the entire row minus the response
+  //var rowRange = sheet.getRange(row, 1, 1, numColumns-1);
+  
+  // Get the values for all cells in the row
+  var vPrompt = sheet.getRange(row,1).getValue();
+
+  
+  if (vPrompt !="") {
+    makeRequestToOpenAI(vPrompt,row)
   }
 }
