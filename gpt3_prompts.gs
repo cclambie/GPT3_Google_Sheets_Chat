@@ -54,6 +54,6 @@ function fTheTrigger() {
 
   
   if (vPrompt !="") {
-    makeRequestToOpenAI(vPrompt,row)
+    makeRequestToOpenAI(row, vPrompt)
   }
 }
